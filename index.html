@@ -75,6 +75,7 @@
                 <button class="btn-opt" data-type="ban" data-hours="72" data-val="Ban 3 Dni" onclick="toggleOpt(this)">5. Ban 3 Dni</button>
             </div>
         </div>
+
         <!-- Karta: Combat Logging -->
         <div class="rule-card">
             <div class="rule-title">Combat Logging</div>
@@ -106,4 +107,95 @@
             <div class="rule-title">Exploiting / Czitowanie</div>
             <div class="rule-desc">Używanie oprogramowania lub skryptów psujących grę</div>
             <div class="options-group">
-                <button class="btn-opt" data-type="perm" data-val="Ban
+                <button class="btn-opt" data-type="perm" data-val="Ban Permanentny" onclick="toggleOpt(this)">1. Ban Permanentny</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dolny Panel Podsumowania -->
+    <div class="summary-panel">
+        <div>
+            <div class="summary-text">Wyliczona kara końcowa:</div>
+            <div class="summary-result" id="final-verdict">Brak kar (Wybierz wykroczenia)</div>
+        </div>
+        <button class="btn-clear" onclick="clearAll()">Wyczyść</button>
+    </div>
+    <script>
+        function toggleOpt(element) {
+            // Szukamy wszystkich przycisków w tej samej karcie wykroczenia
+            const group = element.parentElement.querySelectorAll('.btn-opt');
+            
+            if (element.classList.contains('active')) {
+                // Jeśli kliknięto aktywny, odznacz go
+                element.classList.remove('active');
+            } else {
+                // Odznacz inne w tej grupie i zaznacz ten kliknięty
+                group.forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+            }
+            
+            calculatePenalty();
+        }
+
+        function calculatePenalty() {
+            const activeButtons = document.querySelectorAll('.btn-opt.active');
+            
+            if (activeButtons.length === 0) {
+                document.getElementById('final-verdict').innerText = "Brak kar (Wybierz wykroczenia)";
+                return;
+            }
+
+            let hasPerm = false;
+            let totalBanHours = 0;
+            let hasKick = false;
+            let warnCount = 0;
+            let reasons = [];
+
+            activeButtons.forEach(btn => {
+                const type = btn.getAttribute('data-type');
+                const title = btn.closest('.rule-card').querySelector('.rule-title').innerText;
+                const val = btn.getAttribute('data-val');
+
+                reasons.push(`${title} (${val})`);
+
+                if (type === 'perm') hasPerm = true;
+                if (type === 'kick') hasKick = true;
+                if (type === 'warn') warnCount++;
+                if (type === 'ban') {
+                    totalBanHours += parseInt(btn.getAttribute('data-hours')) || 0;
+                }
+            });
+
+            // Tworzenie finalnego werdyktu
+            let verdict = "";
+
+            if (hasPerm) {
+                verdict = "BAN PERMANENTNY";
+            } else if (totalBanHours > 0) {
+                const days = Math.floor(totalBanHours / 24);
+                const hours = totalBanHours % 24;
+                
+                if (days > 0 && hours > 0) {
+                    verdict = `BAN na ${days} dni i ${hours}h`;
+                } else if (days > 0) {
+                    verdict = `BAN na ${days} dni`;
+                } else {
+                    verdict = `BAN na ${totalBanHours}h`;
+                }
+            } else if (hasKick) {
+                verdict = "KICK z serwera";
+            } else if (warnCount > 0) {
+                verdict = `Ostrzeżenie (Ilość: ${warnCount})`;
+            }
+
+            // Wyświetlenie werdyktu wraz z powodami w panelu dolnym
+            document.getElementById('final-verdict').innerHTML = `${verdict} <br><span style="font-size: 12px; color: #7982a9; font-weight: normal;">Powody: ${reasons.join(', ')}</span>`;
+        }
+
+        function clearAll() {
+            document.querySelectorAll('.btn-opt').forEach(btn => btn.classList.remove('active'));
+            calculatePenalty();
+        }
+    </script>
+</body>
+</html>
