@@ -3,274 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoreRP - Zaawansowany Kalkulator Kar ER:LC</title>
+    <title>CoreRP - Kalkulator Kar ER:LC</title>
     <style>
-        :root {
-            --bg-main: #0a0b10;
-            --bg-card: #121420;
-            --bg-opt: #1a1d2e;
-            --border-color: #242943;
-            --text-main: #f1f3f9;
-            --text-muted: #7983a9;
-            
-            --clr-warn: #2ecc71;
-            --clr-kick: #9b59b6;
-            --clr-ban: #e67e22;
-            --clr-perm: #ff3838;
-            --clr-neon: #00ffcc;
-        }
+        body { background-color: #090a0f; color: #f1f2f6; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 1000px; background-color: #11131c; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); border: 1px solid #1f2335; margin-bottom: 120px; }
+        h1 { color: #00ffcc; text-align: center; font-size: 30px; margin: 0 0 5px 0; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
+        .subtitle { text-align: center; color: #7982a9; font-size: 14px; margin-bottom: 25px; }
+        
+        .rule-card { background: #141622; border: 1px solid #1f2335; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .rule-title { font-weight: bold; font-size: 16px; color: #fff; margin-bottom: 2px; }
+        .rule-desc { font-size: 12px; color: #656d8a; margin-bottom: 10px; }
+        
+        .options-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-opt { background: #1a1d29; border: 1px solid #2d334a; color: #a9b1d6; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s ease; }
+        .btn-opt:hover { border-color: #7982a9; color: #fff; }
+        
+        /* Kolory po zaznaczeniu (Stackowanie) */
+        .btn-opt.active[data-type="warn"] { background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; color: #2ecc71; font-weight: bold; }
+        .btn-opt.active[data-type="kick"] { background: rgba(155, 89, 182, 0.2); border-color: #9b59b6; color: #9b59b6; font-weight: bold; }
+        .btn-opt.active[data-type="ban"] { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; font-weight: bold; }
+        .btn-opt.active[data-type="perm"] { background: rgba(255, 56, 56, 0.2); border-color: #ff3838; color: #ff3838; font-weight: bold; }
 
-        body { 
-            background-color: var(--bg-main); 
-            color: var(--text-main); 
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-
-        .container { 
-            width: 100%; 
-            max-width: 900px; 
-            background-color: var(--bg-card); 
-            padding: 30px; 
-            border-radius: 16px; 
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
-            border: 1px solid var(--border-color); 
-            margin-bottom: 160px; 
-            box-sizing: border-box;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h1 { 
-            color: var(--clr-neon); 
-            font-size: 32px; 
-            margin: 0 0 8px 0; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(0, 255, 204, 0.25); 
-        }
-
-        .subtitle { 
-            color: var(--text-muted); 
-            font-size: 14px; 
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 14px;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: var(--clr-neon);
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
-        }
-
-        .rule-card { 
-            background: #161929; 
-            border: 1px solid var(--border-color); 
-            border-radius: 10px; 
-            padding: 20px; 
-            margin-bottom: 15px; 
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .rule-card:hover {
-            border-color: #31385c;
-        }
-
-        .rule-title { 
-            font-weight: bold; 
-            font-size: 18px; 
-            color: #fff; 
-            margin-bottom: 4px; 
-        }
-
-        .rule-desc { 
-            font-size: 13px; 
-            color: var(--text-muted); 
-            margin-bottom: 15px; 
-        }
-
-        .options-group { 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-        }
-
-        .btn-opt { 
-            background: var(--bg-opt); 
-            border: 1px solid var(--border-color); 
-            color: #a9b1d6; 
-            padding: 10px 16px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            font-weight: 500;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-
-        .btn-opt:hover { 
-            border-color: var(--text-muted); 
-            color: #fff; 
-        }
-
-        .btn-opt.active[data-type="warn"] { background: rgba(46, 204, 113, 0.15); border-color: var(--clr-warn); color: var(--clr-warn); font-weight: 600; }
-        .btn-opt.active[data-type="kick"] { background: rgba(155, 89, 182, 0.15); border-color: var(--clr-kick); color: var(--clr-kick); font-weight: 600; }
-        .btn-opt.active[data-type="ban"] { background: rgba(230, 126, 34, 0.15); border-color: var(--clr-ban); color: var(--clr-ban); font-weight: 600; }
-        .btn-opt.active[data-type="perm"] { background: rgba(255, 56, 56, 0.15); border-color: var(--clr-perm); color: var(--clr-perm); font-weight: 600; }
-
-        .summary-panel { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            background: #0d0f1a; 
-            border-top: 3px solid var(--clr-neon); 
-            padding: 20px 40px; 
-            box-sizing: border-box; 
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 30px;
-            align-items: center; 
-            box-shadow: 0 -10px 35px rgba(0,0,0,0.9); 
-            z-index: 100; 
-        }
-
-        .summary-details {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .summary-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        .summary-result { 
-            font-size: 20px; 
-            color: #fff; 
-            font-weight: bold; 
-        }
-
-        .summary-result span {
-            color: var(--clr-neon);
-        }
-
-        .command-box {
-            display: flex;
-            align-items: center;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 5px 5px 5px 12px;
-            gap: 10px;
-            min-width: 320px;
-        }
-
-        .player-id-input {
-            width: 60px;
-            background: transparent;
-            border: none;
-            border-right: 1px solid var(--border-color);
-            color: var(--clr-neon);
-            font-size: 14px;
-            font-weight: bold;
-            padding-right: 5px;
-        }
-
-        .player-id-input:focus {
-            outline: none;
-        }
-
-        .command-text {
-            font-family: monospace;
-            font-size: 13px;
-            color: #a9b1d6;
-            flex-grow: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .btn-copy {
-            background: #1f2335;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .btn-copy:hover {
-            background: var(--clr-neon);
-            color: #000;
-            border-color: var(--clr-neon);
-        }
-
-        .btn-clear { 
-            background: var(--clr-perm); 
-            border: none; 
-            color: #fff; 
-            padding: 12px 24px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 14px; 
-            transition: background 0.2s;
-        }
-
-        .btn-clear:hover { 
-            background: #cc2c2c; 
-        }
-
-        @media (max-width: 800px) {
-            .summary-panel {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 15px;
-            }
-            .command-box {
-                min-width: 100%;
-            }
-        }
+        /* Panel podsumowania na dole ekranu (zablokowany na stałe) */
+        .summary-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: #161925; border-top: 2px solid #00ffcc; padding: 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -5px 25px rgba(0,0,0,0.8); z-index: 100; }
+        .summary-text { font-size: 14px; color: #a9b1d6; }
+        .summary-result { font-size: 18px; color: #00ffcc; font-weight: bold; margin-top: 4px; }
+        .btn-clear { background: #ff3838; border: none; color: #fff; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-clear:hover { background: #e03232; }
     </style>
 </head>
 <body>
-        <div class="container">
-        <header>
-            <h1>CoreRP - System Kar</h1>
-            <div class="subtitle">Wygodne narzędzie taryfikacyjne dla zespołu administracyjnego</div>
-        </header>
-
-        <!-- Wyszukiwarka -->
-        <input type="text" id="search" class="search-box" placeholder="Szukaj wykroczenia (np. RDM, VDM, Toksyczność)..." oninput="filterRules()">
+    <div class="container">
+        <h1>CoreRP - Kalkulator Kar</h1>
+        <div class="subtitle">Klikaj wybrane wykroczenia, aby automatycznie zsumować i wyliczyć końcową karę</div>
 
         <!-- Karta: RDM -->
         <div class="rule-card">
-            <div class="rule-title">RDM (Random Deathmatch)</div>
-            <div class="rule-desc">Zabijanie lub atakowanie graczy bez uzasadnionego powodu fabularnego (RP).</div>
+            <div class="rule-title">RDM</div>
+            <div class="rule-desc">Zabijanie bez powodu RP</div>
             <div class="options-group">
                 <button class="btn-opt" data-type="warn" data-val="Ostrzeżenie" onclick="toggleOpt(this)">1. Ostrzeżenie</button>
                 <button class="btn-opt" data-type="kick" data-val="Kick" onclick="toggleOpt(this)">2. Kick</button>
@@ -282,8 +52,8 @@
 
         <!-- Karta: VDM -->
         <div class="rule-card">
-            <div class="rule-title">VDM (Vehicle Deathmatch)</div>
-            <div class="rule-desc">Używanie pojazdu jako broni w celu potrącenia lub zabicia innych graczy.</div>
+            <div class="rule-title">VDM</div>
+            <div class="rule-desc">Rozjeżdżanie graczy pojazdem</div>
             <div class="options-group">
                 <button class="btn-opt" data-type="warn" data-val="Ostrzeżenie" onclick="toggleOpt(this)">1. Ostrzeżenie</button>
                 <button class="btn-opt" data-type="kick" data-val="Kick" onclick="toggleOpt(this)">2. Kick</button>
@@ -296,7 +66,7 @@
         <!-- Karta: FailRP -->
         <div class="rule-card">
             <div class="rule-title">FailRP</div>
-            <div class="rule-desc">Nierealistyczne zachowania łamiące imersję, np. jazda sportowym autem po pionowych skałach.</div>
+            <div class="rule-desc">Nierealistyczne zachowania, jazda po skałach, itp.</div>
             <div class="options-group">
                 <button class="btn-opt" data-type="warn" data-val="Ostrzeżenie" onclick="toggleOpt(this)">1. Ostrzeżenie</button>
                 <button class="btn-opt" data-type="warn" data-val="Ostrzeżenie #2" onclick="toggleOpt(this)">2. Ostrzeżenie #2</button>
@@ -305,11 +75,10 @@
                 <button class="btn-opt" data-type="ban" data-hours="72" data-val="Ban 3 Dni" onclick="toggleOpt(this)">5. Ban 3 Dni</button>
             </div>
         </div>
-
         <!-- Karta: Combat Logging -->
         <div class="rule-card">
             <div class="rule-title">Combat Logging</div>
-            <div class="rule-desc">Celowe opuszczenie gry podczas akcji RP lub w trakcie sprawdzania przez administrację.</div>
+            <div class="rule-desc">Wyjście z gry podczas akcji lub sprawdzania</div>
             <div class="options-group">
                 <button class="btn-opt" data-type="kick" data-val="Kick" onclick="toggleOpt(this)">1. Kick</button>
                 <button class="btn-opt" data-type="ban" data-hours="24" data-val="Ban 1 Dzień" onclick="toggleOpt(this)">2. Ban 1 Dzień</button>
@@ -321,12 +90,12 @@
 
         <!-- Karta: Toxic -->
         <div class="rule-card">
-            <div class="rule-title">Toxic / Obrazy grona</div>
-            <div class="rule-desc">Wyzywanie, toksyczność w stosunku do graczy lub ekipy na czatach globalnych bądź głosowych.</div>
+            <div class="rule-title">Toxic / Obrazy</div>
+            <div class="rule-desc">Wyzywanie innych graczy na czacie globalnym lub głosowym</div>
             <div class="options-group">
                 <button class="btn-opt" data-type="kick" data-val="Kick" onclick="toggleOpt(this)">1. Kick</button>
                 <button class="btn-opt" data-type="ban" data-hours="24" data-val="Ban 24h" onclick="toggleOpt(this)">2. Ban 24h</button>
-                <button class="btn-opt" data-type="ban" data-hours="72" data-val="Ban 3 Dni" onclick="toggleOpt(this)">3. Ban 3 Dni</button>
+                <button class="btn-opt" data-type="ban" data-hours="24" data-val="Ban 1 Dzień" onclick="toggleOpt(this)">3. Ban 1 Dzień</button>
                 <button class="btn-opt" data-type="ban" data-hours="168" data-val="Ban 7 Dni" onclick="toggleOpt(this)">4. Ban 7 Dni</button>
                 <button class="btn-opt" data-type="perm" data-val="Ban Permanentny" onclick="toggleOpt(this)">5. Ban Permanentny</button>
             </div>
@@ -334,161 +103,7 @@
 
         <!-- Karta: Exploiting -->
         <div class="rule-card">
-            <div class="rule-title">Exploiting / Czitowanie / Bugowanie</div>
-            <div class="rule-desc">Wykorzystywanie błędów gry, skryptów, zewnętrznego oprogramowania modyfikującego rozgrywkę.</div>
+            <div class="rule-title">Exploiting / Czitowanie</div>
+            <div class="rule-desc">Używanie oprogramowania lub skryptów psujących grę</div>
             <div class="options-group">
-                <button class="btn-opt" data-type="ban" data-hours="168" data-val="Ban 7 Dni" onclick="toggleOpt(this)">1. Wykorzystywanie błędów</button>
-                <button class="btn-opt" data-type="perm" data-val="Ban Permanentny" onclick="toggleOpt(this)">2. Aktywne Czitowanie (Perm)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Panel dolny -->
-    <div class="summary-panel">
-        <div class="summary-details">
-            <div class="summary-title">Podsumowanie Kary</div>
-            <div class="summary-result" id="summaryText">Wybierz przewinienia...</div>
-        </div>
-        
-        <div class="command-box">
-            <input type="text" class="player-id-input" id="playerId" placeholder="ID" oninput="calculatePunishment()" title="Wpisz ID gracza">
-            <div class="command-text" id="commandOutput">/ban [ID] [Czas] [Powód]</div>
-            <button class="btn-copy" onclick="copyCommand()">Kopiuj</button>
-        </div>
-
-        <button class="btn-clear" onclick="clearAll()">Wyczyść wszystko</button>
-    </div>
-    <script>
-        // Funkcja przełączania przycisków (Zabezpieczenie: tylko 1 przycisk aktywny w obrębie jednej karty)
-        function toggleOpt(button) {
-            const group = button.parentElement;
-            const buttons = group.querySelectorAll('.btn-opt');
-            
-            if (button.classList.contains('active')) {
-                button.classList.remove('active');
-            } else {
-                buttons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            }
-            
-            calculatePunishment();
-        }
-
-        // Główny silnik obliczający karę i tworzący powód/komendę
-        function calculatePunishment() {
-            const activeButtons = document.querySelectorAll('.btn-opt.active');
-            
-            if (activeButtons.length === 0) {
-                document.getElementById('summaryText').innerHTML = "Wybierz przewinienia...";
-                document.getElementById('commandOutput').innerText = "/ban [ID] [Czas] [Powód]";
-                return;
-            }
-
-            let totalHours = 0;
-            let hasPerm = false;
-            let kicksCount = 0;
-            let warnsCount = 0;
-            let reasons = [];
-
-            activeButtons.forEach(btn => {
-                const type = btn.getAttribute('data-type');
-                const cardTitle = btn.closest('.rule-card').querySelector('.rule-title').innerText.split('(')[0].trim();
-                reasons.push(cardTitle);
-
-                if (type === 'perm') {
-                    hasPerm = true;
-                } else if (type === 'ban') {
-                    totalHours += parseInt(btn.getAttribute('data-hours')) || 0;
-                } else if (type === 'kick') {
-                    kicksCount++;
-                } else if (type === 'warn') {
-                    warnsCount++;
-                }
-            });
-
-            // Formatowanie finalnego opisu kary do wyświetlenia w UI
-            let resultString = "";
-            let finalTimeArg = ""; 
-
-            if (hasPerm) {
-                resultString = "<span>Ban Permanentny</span>";
-                finalTimeArg = "perm";
-            } else if (totalHours > 0) {
-                const days = Math.floor(totalHours / 24);
-                const hours = totalHours % 24;
-                let timeText = "";
-                
-                if (days > 0) timeText += `${days}d `;
-                if (hours > 0 || days === 0) timeText += `${hours}h`;
-                
-                resultString = `Ban na <span>${timeText.trim()}</span>`;
-                finalTimeArg = `${totalHours}h`;
-            } else if (kicksCount > 0) {
-                resultString = "Kara końcowa: <span>Kick z serwera</span>";
-            } else if (warnsCount > 0) {
-                resultString = `Łącznie: <span>${warnsCount}x Ostrzeżenie</span>`;
-            }
-
-            // Dodanie pobocznych informacji (jeśli są warny/kicki razem z banem)
-            let extra = [];
-            if (!hasPerm && totalHours > 0 && kicksCount > 0) extra.push(`${kicksCount}x Kick`);
-            if (!hasPerm && totalHours > 0 && warnsCount > 0) extra.push(`${warnsCount}x Warn`);
-            if (extra.length > 0) resultString += ` (+ ${extra.join(', ')})`;
-
-            document.getElementById('summaryText').innerHTML = resultString;
-
-            // Budowanie komendy w polu tekstowym
-            const pId = document.getElementById('playerId').value.trim() || "[ID]";
-            const reasonString = reasons.join(' + ');
-
-            if (hasPerm || totalHours > 0) {
-                document.getElementById('commandOutput').innerText = `/ban ${pId} ${finalTimeArg} ${reasonString}`;
-            } else if (kicksCount > 0) {
-                document.getElementById('commandOutput').innerText = `/kick ${pId} ${reasonString}`;
-            } else {
-                document.getElementById('commandOutput').innerText = `/warn ${pId} ${reasonString}`;
-            }
-        }
-
-        // Kopiowanie wygenerowanej komendy do schowka systemowego
-        function copyCommand() {
-            const commandText = document.getElementById('commandOutput').innerText;
-            if (commandText === "/ban [ID] [Czas] [Powód]") return;
-
-            navigator.clipboard.writeText(commandText).then(() => {
-                const copyBtn = document.querySelector('.btn-copy');
-                copyBtn.innerText = "Skopiowano!";
-                copyBtn.style.background = "#2ecc71";
-                setTimeout(() => {
-                    copyBtn.innerText = "Kopiuj";
-                    copyBtn.style.background = "#1f2335";
-                }, 1500);
-            });
-        }
-
-        // Resetowanie wszystkich pól
-        function clearAll() {
-            document.querySelectorAll('.btn-opt').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('playerId').value = "";
-            document.getElementById('search').value = "";
-            filterRules();
-            calculatePunishment();
-        }
-
-        // Filtrowanie kart taryfikatora w czasie rzeczywistym
-        function filterRules() {
-            const query = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.rule-card').forEach(card => {
-                const title = card.querySelector('.rule-title').innerText.toLowerCase();
-                const desc = card.querySelector('.rule-desc').innerText.toLowerCase();
-                
-                if (title.includes(query) || desc.includes(query)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+                <button class="btn-opt" data-type="perm" data-val="Ban
